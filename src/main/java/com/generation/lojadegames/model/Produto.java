@@ -43,7 +43,7 @@ public class Produto {
 	private LocalDate dataLancamento;
 
 	@NotNull(message = "O atributo Preço é obrigatório!")
-	@Column(precision = 4, scale = 2)
+	@Column(precision = 6, scale = 2)
 	@Digits(integer = 4, fraction = 2, message = "O atributo Preço deve ter no máximo 4 dígitos inteiros e 2 dígitos decimais.")
 	@DecimalMin(value = "0.0", inclusive = false)
 	private BigDecimal preco;
