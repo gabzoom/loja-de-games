@@ -1,5 +1,7 @@
 package com.generation.lojadegames.service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,10 @@ public class UsuarioService {
 		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
 			return Optional.empty();
 
+		if (!validarMaioridade(usuario.getDataNascimento())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade!", null);
+		}
+
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
 		return Optional.of(usuarioRepository.save(usuario));
@@ -46,7 +52,11 @@ public class UsuarioService {
 			Optional<Usuario> buscaUsuario = usuarioRepository.findByUsuario(usuario.getUsuario());
 
 			if ((buscaUsuario.isPresent()) && (buscaUsuario.get().getId() != usuario.getId()))
-				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário informado já existe!", null);
+
+			if (!validarMaioridade(usuario.getDataNascimento())) {
+				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade!", null);
+			}
 
 			usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
@@ -80,6 +90,7 @@ public class UsuarioService {
 				usuarioLogin.get().setId(usuario.get().getId());
 				usuarioLogin.get().setNome(usuario.get().getNome());
 				usuarioLogin.get().setFoto(usuario.get().getFoto());
+				usuarioLogin.get().setDataNascimento(usuario.get().getDataNascimento());
 				usuarioLogin.get().setToken(gerarToken(usuarioLogin.get().getUsuario()));
 				usuarioLogin.get().setSenha("");
 
@@ -104,6 +115,10 @@ public class UsuarioService {
 
 	private String gerarToken(String usuario) {
 		return "Bearer " + jwtService.generateToken(usuario);
+	}
+
+	private boolean validarMaioridade(LocalDate dataNascimento) {
+		return Period.between(dataNascimento, LocalDate.now()).getYears() >= 18;
 	}
 
 }
