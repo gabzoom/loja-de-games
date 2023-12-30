@@ -38,6 +38,9 @@ public class UsuarioService {
 		if (!validarMaioridade(usuario.getDataNascimento())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade!", null);
 		}
+		
+		if (usuario.getFoto().isEmpty())
+			usuario.setFoto("https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg");
 
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
@@ -57,6 +60,9 @@ public class UsuarioService {
 			if (!validarMaioridade(usuario.getDataNascimento())) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O usuário deve ser maior de idade!", null);
 			}
+			
+			if (usuario.getFoto().isEmpty())
+				usuario.setFoto("https://i0.wp.com/www.repol.copl.ulaval.ca/wp-content/uploads/2019/01/default-user-icon.jpg");
 
 			usuario.setSenha(criptografarSenha(usuario.getSenha()));
 
